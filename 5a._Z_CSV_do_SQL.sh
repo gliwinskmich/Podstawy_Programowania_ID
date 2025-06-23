@@ -11,25 +11,41 @@ fi
 
 # Obliczenie liczby rekordów (pomijając nagłówek)
 total_records=$(($(wc -l < "$input_file") - 1))
-
-echo "Konwersja $input_file ($total_records rekordów) do $output_file..."
-echo "To może chwilę potrwać..."
+echo "CSV -> SQL"
+echo "Konwersja pliku \"$input_file\" (liczba rekordów: $total_records) do pliku \"$output_file\""
+echo ""
+echo "Trwa konwersja..."
 
 # Czas rozpoczęcia
 start_time=$(date +%s)
 
-# Generowanie SQL za pomocą awk - znacznie szybsze
-awk -F';' '
+# Generowanie SQL za pomocą awk z paskiem postępu
+awk -F';' -v total="$total_records" '
+BEGIN {
+# Inicjalizacja paska postępu
+printf "[%-25s] 0%%", "" > "/dev/stderr"
+}
 NR == 1 { next } # Pomijamy nagłówek
 {
 gsub(/[[:space:]]/, "", $0); # Usuwamy białe znaki
 printf "INSERT INTO stepsData (time, intensity, steps) VALUES (%s, %s, %s);\n", $1, $2, $3
+
+# Aktualizacja paska postępu
+progress = int((NR-1)/total*100)
+if (progress != prev_progress) {
+printf "\r[%-25s] %d%%", substr("####################################################################################################", 1, progress+1), progress > "/dev/stderr"
+fflush("/dev/stderr")
+prev_progress = progress
+}
+}
+END {
+printf "\r[%-25s] 100%%\n", "####################################################################################################" > "/dev/stderr"
 }
 ' "$input_file" > "$output_file"
 
 # Czas zakończenia
 end_time=$(date +%s)
 duration=$((end_time - start_time))
-
+echo ""
 echo "Zakończono sukcesem konwersję $total_records rekordów w $duration sekund."
-echo "Wynik zapisano w pliku $output_file"
+echo "Wynik zapisano w pliku \"$output_file\""
