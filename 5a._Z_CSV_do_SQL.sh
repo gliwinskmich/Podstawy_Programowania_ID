@@ -33,13 +33,13 @@ printf "INSERT INTO stepsData (time, intensity, steps) VALUES (%s, %s, %s);\n", 
 # Aktualizacja paska postępu
 progress = int((NR-1)/total*100)
 if (progress != prev_progress) {
-printf "\r[%-25s] %d%%", substr("####################################################################################################", 1, progress+1), progress > "/dev/stderr"
+printf "\r[%-100s] %d%%", substr("####################################################################################################", 1, progress+1), progress > "/dev/stderr"
 fflush("/dev/stderr")
 prev_progress = progress
 }
 }
 END {
-printf "\r[%-25s] 100%%\n", "####################################################################################################" > "/dev/stderr"
+printf "\r[%-100s] 100%%\n", "####################################################################################################" > "/dev/stderr"
 }
 ' "$input_file" > "$output_file"
 
