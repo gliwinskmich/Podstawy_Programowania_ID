@@ -23,7 +23,7 @@ porownaj_pliki() {
     echo ""
 }
 
-# Funkcja aktualizująca plik
+#aktualizowanie pliku
 aktualizuj_plik() {
     read -p "Czy zaktualizować treść listy (lista.txt) poprawkami (lista-pop.txt)? [T/N]: " odpowiedz
     if [[ "$odpowiedz" =~ [Tt] ]]; then
@@ -38,7 +38,7 @@ aktualizuj_plik() {
     fi
 }
 
-# Funkcja weryfikująca sumy MD5
+#weryfikacja sumy MD5
 weryfikuj_md5() {
     echo -e "\nWeryfikacja sum kontrolnych (MD5):"
     echo ""
@@ -56,21 +56,17 @@ weryfikuj_md5() {
     fi
 }
 
-# Główna część skryptu
+#główna część skryptu
 clear
 echo ""
 echo "########## Dodawanie poprawek do listy słów ##########"
 
-# 1. Sprawdź czy pliki istnieją
 sprawdz_pliki
 
-# 2. Pokaż różnice
 porownaj_pliki
 
-# 3. Zapytaj o aktualizację i wykonaj ją
 aktualizuj_plik
 
-# 4. Zweryfikuj sumy kontrolne
 weryfikuj_md5
 echo ""
 echo -e "########## Operacja zakończona ##########"
