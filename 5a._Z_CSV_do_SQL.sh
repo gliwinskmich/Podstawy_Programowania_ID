@@ -23,7 +23,7 @@ start_time=$(date +%s)
 awk -F';' -v total="$total_records" '
 BEGIN {
 # Inicjalizacja paska postępu
-printf "[%-25s] 0%%", "" > "/dev/stderr"
+printf "[%-100s] 0%%", "" > "/dev/stderr"
 }
 NR == 1 { next } # Pomijamy nagłówek
 {
