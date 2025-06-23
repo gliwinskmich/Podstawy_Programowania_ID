@@ -1,17 +1,17 @@
 #!/bin/bash
 
-input_file="steps-2sql.csv"
-output_file="dane.sql"
+input_file="steps-2csv.sql"
+output_file="dane.csv"
 
 #sprawdzenie czy plik źródłowy istnieje
 if [ ! -f "$input_file" ]; then
-echo "Plik źródłowy $input_file nie istnieje!"
-exit 1
+    echo "Plik źródłowy $input_file nie istnieje!"
+    exit 1
 fi
 
-#obliczenie liczby rekordów (pomijając nagłówek)
-total_records=$(($(wc -l < "$input_file") - 1))
-echo "CSV -> SQL"
+#obliczenie liczby rekordów
+total_records=$(grep -c "INSERT INTO" "$input_file")
+echo "SQL -> CSV"
 echo "Konwersja pliku \"$input_file\" (liczba rekordów: $total_records) do pliku \"$output_file\""
 echo ""
 echo "Trwa konwersja..."
@@ -19,19 +19,33 @@ echo "Trwa konwersja..."
 #czas rozpoczęcia
 start_time=$(date +%s)
 
-#generowanie SQL za pomocą awk z paskiem postępu
-awk -F';' -v total="$total_records" '
+#nagłówek CSV
+echo "dateTime;steps;synced" > "$output_file"
+
+#generowanie CSV za pomocą awk z paskiem postępu
+awk -v total="$total_records" '
 BEGIN {
-#paska postępu
+#pasek postępu
 printf "[%-100s] 0%%", "" > "/dev/stderr"
 }
-NR == 1 { next } # Pomijamy nagłówek
-{
-gsub(/[[:space:]]/, "", $0); # Usuwamy białe znaki
-printf "INSERT INTO stepsData (time, intensity, steps) VALUES (%s, %s, %s);\n", $1, $2, $3
+/INSERT INTO stepsData \(dateTime, steps, synced\) VALUES/ {
+#wartości z VALUES
+match($0, /VALUES *\(([^,]+),([^,]+),([^)]+)\)/, arr)
+dateTime = substr(arr[1], 1, length(arr[1])-3) # Obcinamy 3 ostatnie znaki
+steps = arr[2]
+synced = arr[3]
+
+#usuwanie ewentualnych białych znaków
+gsub(/ /, "", dateTime)
+gsub(/ /, "", steps)
+gsub(/ /, "", synced)
+
+#zapis do CSV
+printf "%s;%s;%s\n", dateTime, steps, synced >> "'"$output_file"'"
 
 #aktualizacja paska postępu
-progress = int((NR-1)/total*100)
+processed++
+progress = int(processed/total*100)
 if (progress != prev_progress) {
 printf "\r[%-100s] %d%%", substr("####################################################################################################", 1, progress+1), progress > "/dev/stderr"
 fflush("/dev/stderr")
@@ -41,7 +55,7 @@ prev_progress = progress
 END {
 printf "\r[%-100s] 100%%\n", "####################################################################################################" > "/dev/stderr"
 }
-' "$input_file" > "$output_file"
+' "$input_file"
 
 #czas zakończenia
 end_time=$(date +%s)
