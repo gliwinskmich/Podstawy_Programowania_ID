@@ -8,7 +8,7 @@ echo "Porównywanie zawartości plików..."
 
 grep -Fxvf "en-7.2.json5" "en-7.4.json5" > "$temp_file"
 
-#dodanie nawiasów klamrowych na początku i końcu
+#dodanie nawiasów klamrowych na początku i końcu (struktura pliku json)
 {
     echo "{"
     cat "$temp_file"

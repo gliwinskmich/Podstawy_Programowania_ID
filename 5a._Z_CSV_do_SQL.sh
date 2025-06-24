@@ -16,10 +16,10 @@ echo "Konwersja pliku \"$input_file\" (liczba rekordów: $total_records) do plik
 echo ""
 echo "Trwa konwersja..."
 
-#czas rozpoczęcia (dla responsywności)
+#czas rozpoczęcia (dla użytkownika)
 start_time=$(date +%s)
 
-#generowanie SQL za pomocą awk z paskiem postępu (dla responsywności)
+#generowanie SQL za pomocą awk z paskiem postępu (pasek postępu dla użytkownika)
 awk -F';' -v total="$total_records" '
 BEGIN {
 #paska postępu
@@ -43,9 +43,10 @@ printf "\r[%-100s] 100%%\n", "##################################################
 }
 ' "$input_file" > "$output_file"
 
-#czas zakończenia (dla responsywności)
+#czas zakończenia (dla użytkownika)
 end_time=$(date +%s)
 duration=$((end_time - start_time))
+
 echo ""
 echo "Zakończono sukcesem konwersję $total_records rekordów w $duration s."
 echo "Wynik zapisano w pliku \"$output_file\""
