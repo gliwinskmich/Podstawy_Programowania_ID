@@ -10,7 +10,7 @@ https://staff.tu.kielce.pl/sk/media/downloads/pp/pp-projekt-zadania.pdf
 ## Wymagania
 Dla poprawnego działania skryptów należy upewnić się, że są zainstalowane narzędzia:
 **zip unzip imagemagick**
-oraz dla poprawnego generowania treści dla zad. 8, wymagany hest font **AdwaitaSans-Regular**
+oraz dla poprawnego generowania treści dla zad. 8, wymagany jest font **AdwaitaSans-Regular**
 
 > Jeżeli wykonanie skryptu wymaga niestandardowego narzędzia
 > zostanie wyświetlony odpowiedni komunikat oraz nastąpi
